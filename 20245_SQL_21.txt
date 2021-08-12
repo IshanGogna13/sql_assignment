@@ -1,0 +1,233 @@
+Q1. Write a query to list all the employees who are working as clerk 
+
+SELECT ename,empno
+FROM emp
+WHERE job LIKE 'CLERK';
+
+Q2.Write a query to list the employees who are working as clerks or managers 
+
+SELECT ename,empno,job
+FROM emp
+WHERE job in ('CLERK','MANAGER');
+
+Q3. Write a query to get the current date 
+
+SELECT DATE();
+        
+
+Q4. Write a query to list the employees whose salaries are within the range of 
+   500 and 1000
+
+SELECT ename,empno,sal
+FROM emp
+WHERE sal BETWEEN 500 AND 1000;
+
+
+Q5. Write a query to list the employees who have joined in the month of December 
+
+SELECT ename,empno,sal
+FROM emp
+WHERE hiredate like "%DEC%";
+        
+
+Q6. Write a query to list the employees whose salaries are
+   not within  the range of 1000 and 2500 
+
+SELECT ename,empno,sal
+FROM emp
+WHERE sal NOT BETWEEN 1000 AND 2500;
+
+
+Q7. Write a query who are getting 800, 950, 3000,5000 
+
+SELECT ename,empno,sal
+FROM emp
+WHERE sal in (800, 950, 3000,5000);
+        
+
+Q8. To list all the employees whose names are having ‘L’ as second character
+
+SELECT ename,empno,sal
+FROM emp
+WHERE ename LIKE '_L%';
+        
+
+Q9. To list all the employees whose names are having ‘D’ as last character  
+
+SELECT ename,empno,sal
+FROM emp
+WHERE ename LIKE '%D';
+        
+
+Q10.To list all the employees whose names are having just 5 characters as length?  
+
+SELECT ename,empno,sal
+FROM emp
+WHERE ename LIKE '_____';
+
+
+Q11. To list all the employees whose names are starting with ‘T’ and ending with ‘R’
+
+SELECT ename,empno,sal
+FROM emp
+WHERE ename LIKE 'T%R';
+
+
+Q12. Display those employees who's name contains "A"? 
+
+SELECT ename,empno,sal
+FROM emp
+WHERE ename LIKE '%A%';
+
+
+Q13. Display those employee who joined the company before 19th of the month? 
+
+SELECT ename,empno,sal
+FROM emp
+WHERE hiredate < '19-DEC-81';
+
+
+Q14. What is the employee number of 'James'  
+
+SELECT ename,empno
+FROM emp
+WHERE ename LIKE 'JAMES';
+
+
+Q15. What is the sal of KING
+
+SELECT ename,empno,sal
+FROM emp
+WHERE ename LIKE 'KING';
+
+
+Q16. Who is the President for organization? 
+
+SELECT ename,empno
+FROM emp
+WHERE job LIKE 'PRESIDENT';
+
+
+Q17. List all details of all the managers?
+
+SELECT *
+FROM emp
+WHERE job LIKE 'MANAGER';
+
+
+Q18. Give employee details for employees drawing commission? 
+
+SELECT * 
+FROM emp
+WHERE  comm IS NOT NULL;
+
+
+
+Q19. List employees who joined before april-1981? 
+
+SELECT empno,ename 
+FROM emp
+WHERE  hiredate < '04-APR-1981';
+
+
+Q20. What is the salary of following:  
+King, Blake, Ford, Smith 
+
+SELECT empno,ename,sal
+FROM emp
+WHERE ename IN ('KING','BLAKE','FORD','SMITH');
+
+
+Q22. Who is drawing salary less than 3500 
+
+
+SELECT empno,ename,sal
+FROM emp
+WHERE sal < 3500;
+
+
+Q23. List the details of all the clerks 
+
+SELECT *
+FROM emp
+WHERE job LIKE "CLERK";
+
+
+
+Q24. what is the annual salary for each the employees 
+
+SELECT ename,sal*12 
+FROM emp;
+
+
+Q25. if there is a hike in monthly salary by 20% for ford, what will be his annual 
+    Salary
+
+SELECT empno,sal+(sal*20)/100 AS salary, ename 
+FROM emp 
+WHERE ename="FORD"
+
+Q26. What is the total salary for each department 
+
+SELECT SUM(sal),deptno
+FROM emp
+GROUP BY deptno
+
+
+Q27. Who is drawing the lowest salary in dept 10 
+
+SELECT ename,empno
+FROM emp
+WHERE deptno=10;
+
+
+Q28. What is the average salary for Managers 
+
+SELECT empno,ename,AVG(sal)
+FROM emp
+WHERE job LIKE "MANAGER";
+
+
+Q29. What is the total salary for salesman 
+
+SELECT SUM(sal) 
+FROM emp
+WHERE job like "SALESMAN";
+
+Q30. Which department is having the lowest average salary? 
+
+SELECT deptno,AVG(sal) AS 'AVERAGE'
+FORM emp 
+GROUB BY deptno
+HAVING MIN(AVERAGE);
+
+
+Q31. How many persons are in each role 
+
+SELECT job,COUNT(empno) 
+FROM emp
+GROUP BY job;
+
+Q32. What is the highest salary among analyst 
+
+SELECT MAX(sal)
+FROM emp
+WHERE job LIKE 'ANALYST';
+
+Q33. What is the highest commission paid 
+
+SELECT MAX(comm)
+FROM emp;
+
+Q34. How many departments are there 
+
+SELECT COUNT(deptno)
+FROM dept;
+
+
+Q35. List the names in which 3rd  character is L 
+
+SELECT ename,empno,sal
+FROM emp
+WHERE ename LIKE '__L%';
+

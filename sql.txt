@@ -1,0 +1,539 @@
+SELECT empno from emp where ename is "JAMES";
+
+SELECT sal from emp where ename is "KING";
+
+
+SELECT ename from emp where job is "PRESIDENT";
+
+
+select dname from dept where loc is "BOSTON";
+
+
+select deptno from dept where dname is "ACCOUNTING";
+
+
+select ename from emp where sal between 1500 and 3000;
+
+
+
+select * from emp where job is "MANAGER";
+
+
+
+
+select * from emp where comm is not NULL;
+
+
+
+
+select ename from emp where deptno is 30 and job is "MANAGER" ;
+
+
+
+select sal from emp where ename is "KING" OR ename is "BLAKE" OR ename is "FORD" OR ename is "SMITH";
+
+
+
+
+
+select hiredate from emp where job is "PRESIDENT" OR job is "MANAGER";
+
+
+
+
+
+
+SELECT ename 
+FROM emp
+WHERE sal<3500;
+
+
+
+SELECT *
+FROM emp
+WHERE job IS "CLERK";
+
+
+
+
+SELECT ename
+FROM emp
+WHERE ename LIKE "A%"
+;
+
+
+
+SELECT ename
+FROM emp
+WHERE ename LIKE "%D"
+;
+
+
+
+SELECT ename
+FROM emp
+WHERE ename LIKE "___L%"
+;
+
+
+
+6 aug
+
+
+
+SELECT sum(sal) , deptno
+FROM emp
+GROUP BY deptno;
+
+
+
+SELECT MIN(sal) , deptno
+FROM emp
+WHERE deptno IS 10;
+
+
+
+SELECT AVG(sal)
+FROM emp
+WHERE JOB IS "MANAGER";
+
+
+
+SELECT SUM(sal)
+FROM emp
+WHERE JOB IS "SALESMAN";
+
+
+
+
+SELECT job , COUNT(JOB) 
+FROM emp
+GROUP BY job;
+
+
+
+
+SELECT MAX(sal) , ename
+FROM emp 
+WHERE job is "ANALYST";
+
+
+
+
+SELECT ename , MAX(comm)
+FROM emp;
+
+
+
+
+
+SELECT deptno , COUNT( deptno)
+FROM emp
+GROUP BY deptno;
+
+
+
+
+SELECT deptno , AVG(sal)
+FROM emp
+GROUP BY deptno;
+
+
+
+
+SELECT AVG( sal) AS average    ////DOUBT
+FROM emp
+GROUP BY deptno
+
+;
+
+
+
+
+
+
+
+
+hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+
+
+
+SELECT e.ename , e.empno
+FROM emp e,dept d
+WHERE e.deptno=d.deptno AND dname LIKE "ACCOUNTING";
+
+
+
+SELECT worker.ename , MIN(manager.sal) AS mini
+FROM emp worker , emp manager 
+GROUP BY manager.job LIKE "MANAGER"                           /////////DOUBT
+HAVING (worker.sal> mini ) ; 
+
+
+
+SELECT * 
+FROM emp
+NATURAL JOIN dept
+WHERE loc LIKE "CHICAGO";
+
+
+
+
+
+SELECT  COUNT(empno)
+FROM emp
+NATURAL JOIN dept
+WHERE loc LIKE "CHICAGO";
+
+
+
+
+SELECT  ename , loc
+FROM emp
+NATURAL JOIN dept
+ORDER BY loc;
+
+
+
+
+
+SELECT  ename , job
+FROM emp
+WHERE mgr IS NULL;
+
+
+
+
+SELECT  worker.ename || " works for "|| manager.ename
+FROM emp worker , emp manager
+WHERE worker.mgr=manager.empno;
+
+
+
+
+
+
+
+
+
+
+SELECT ename , empno
+FROM emp
+WHERE deptno=(SELECT deptno
+				FROM dept
+                WHERE dname LIKE "ACCOUNTING");
+
+
+
+
+SELECT ename 
+FROM emp
+WHERE sal>(SELECT MIN(sal)
+			FROM emp
+            WHERE job LIKE "MANAGER");
+
+
+
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+SELECT deptno,
+	(CASE 
+     WHEN DNAME='SALES'
+     THEN "SALES" ELSE "NON SALES" END)
+FROM dept;     
+
+
+
+
+
+
+SELECT empno,
+	(CASE 
+     WHEN sal>1000
+     THEN sal ELSE '1000' END)
+FROM emp;     
+
+////
+
+SELECT empno,
+	(CASE 
+     WHEN sal<100
+     THEN 'LOW' ELSE (CASE WHEN 1000<sal<2500 THEN 'MEDIUM' ELSE 'HIGH' END) END)                                                            
+FROM emp;     
+
+OR Better
+
+
+SELECT ename,sal,
+(CASE
+WHEN sal<1000
+THEN 'LOW'
+WHEN sal >1000 AND sal <2500
+THEN 'MEDIUM' ELSE 'HIGH' END) sal_range
+FROM emp;
+/////
+
+
+
+
+
+
+SELECT Distinct(job)
+From emp;
+
+
+SELECT ename , sal
+From emp
+WHERE sal>2850;
+
+
+
+SELECT ename , job , hiredate
+From emp
+WHERE '20-FEB-1981'<HIREDATE<'1-MAY-1981';
+
+
+
+
+SELECT ename , deptno 
+FROM emp
+WHERE deptno IS '10' OR deptno IS'30'
+ORDER BY ename  ASC;
+
+
+
+
+SELECT ename
+FROM emp
+WHERE ename LIKE "T%R";
+
+
+
+
+SELECT ename , job , sal , sal*12 AS "ANNUAL"
+FROM emp;
+
+
+
+
+SELECT AVG(sal) AS 'AVERAGE' , job
+FROM emp
+GROUP BY job;
+
+
+
+SELECT ename , loc
+FROM emp e , dept d
+WHERE e.deptno=d.deptno AND loc LIKE "CHICAGO";
+
+
+SELECT ename , sal
+FROM emp
+WHERE sal< (SELECT sal*0.3
+			FROM emp
+            WHERE job LIKE 'PRESIDENT');
+
+
+SELECT COUNT(ename) 
+FROM emp ,dept 
+WHERE emp.deptno=dept.deptno AND loc LIKE "CHICAGO";
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT p.ProductName as Product , c.CategoryName as Category 
+FROM Products p
+JOIN Categories c ON (p.CategoryID=c.CategoryID
+WHERE SupplierID=(SELECT SupplierID 
+				  FROM Suppliers
+                  WHERE SupplierName LIKE "Leka Trading");
+
+
+//////////////////////////////////////////
+
+
+SELECT p.productname,c.categoryname
+FROM  Products p
+JOIN Suppliers s ON (p.supplierid=s.supplierid )
+JOIN Categories c ON (p.categoryid=c.categoryid)
+WHERE s.suppliername LIKE 'Leka Trading'           
+
+
+
+
+
+
+
+
+SELECT P.productname , SUM(O.Quantity) as TOTAL , O.ProductID
+FROM OrderDetails O
+JOIN Products P ON (p.productid=O.productid)
+GROUP BY O.ProductID 
+ORDER BY TOTAL DESC
+LIMIT 1;    
+
+
+
+
+
+
+
+
+
+
+Microsoft Windows [Version 10.0.19043.1110]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\asus>dotnet new console -o myappAug10
+
+Welcome to .NET Core 3.1!
+---------------------
+SDK Version: 3.1.411
+
+Telemetry
+---------
+The .NET Core tools collect usage data in order to help us improve your experience. It is collected by Microsoft and shared with the community. You can opt-out of telemetry by setting the DOTNET_CLI_TELEMETRY_OPTOUT environment variable to '1' or 'true' using your favorite shell.
+
+Read more about .NET Core CLI Tools telemetry: https://aka.ms/dotnet-cli-telemetry
+
+----------------
+Explore documentation: https://aka.ms/dotnet-docs
+Report issues and find source on GitHub: https://github.com/dotnet/core
+Find out what's new: https://aka.ms/dotnet-whats-new
+Learn about the installed HTTPS developer cert: https://aka.ms/aspnet-core-https
+Use 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli-docs
+Write your first app: https://aka.ms/first-net-core-app
+--------------------------------------------------------------------------------------
+Getting ready...
+The template "Console Application" was created successfully.
+
+Processing post-creation actions...
+Running 'dotnet restore' on myappAug10\myappAug10.csproj...
+  Determining projects to restore...
+  Restored C:\Users\asus\myappAug10\myappAug10.csproj (in 723 ms).
+
+Restore succeeded.
+
+
+C:\Users\asus>cd myappAug10
+
+C:\Users\asus\myappAug10>dir
+ Volume in drive C has no label.
+ Volume Serial Number is 02CA-0B6A
+
+ Directory of C:\Users\asus\myappAug10
+
+08/10/2021  09:17 AM    <DIR>          .
+08/10/2021  09:17 AM    <DIR>          ..
+08/10/2021  09:16 AM               178 myappAug10.csproj
+08/10/2021  09:17 AM    <DIR>          obj
+08/10/2021  09:16 AM               192 Program.cs
+               2 File(s)            370 bytes
+               3 Dir(s)  233,916,608,512 bytes free
+
+C:\Users\asus\myappAug10>notepad myappAug.csproj
+
+C:\Users\asus\myappAug10>notepad myappAug10.csproj
+
+C:\Users\asus\myappAug10>notepadprogram.cs
+'notepadprogram.cs' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Users\asus\myappAug10>notepad program.cs
+
+C:\Users\asus\myappAug10>dotnet build
+Microsoft (R) Build Engine version 16.7.2+b60ddb6f4 for .NET
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+MSBUILD : error MSB1011: Specify which project or solution file to use because this folder contains more than one project or solution file.
+
+C:\Users\asus\myappAug10>dotnet build
+Microsoft (R) Build Engine version 16.7.2+b60ddb6f4 for .NET
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+MSBUILD : error MSB1011: Specify which project or solution file to use because this folder contains more than one project or solution file.
+
+C:\Users\asus\myappAug10>dotnet build
+Microsoft (R) Build Engine version 16.7.2+b60ddb6f4 for .NET
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+MSBUILD : error MSB1011: Specify which project or solution file to use because this folder contains more than one project or solution file.
+
+C:\Users\asus\myappAug10>dir
+ Volume in drive C has no label.
+ Volume Serial Number is 02CA-0B6A
+
+ Directory of C:\Users\asus\myappAug10
+
+08/10/2021  09:20 AM    <DIR>          .
+08/10/2021  09:20 AM    <DIR>          ..
+08/10/2021  09:20 AM                 0 myappAug.csproj
+08/10/2021  09:16 AM               178 myappAug10.csproj
+08/10/2021  09:17 AM    <DIR>          obj
+08/10/2021  09:16 AM               192 Program.cs
+               3 File(s)            370 bytes
+               3 Dir(s)  233,908,031,488 bytes free
+
+C:\Users\asus\myappAug10>del myappAug.csproj
+
+C:\Users\asus\myappAug10>dotnet build
+Microsoft (R) Build Engine version 16.7.2+b60ddb6f4 for .NET
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  myappAug10 -> C:\Users\asus\myappAug10\bin\Debug\netcoreapp3.1\myappAug10.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:16.97
+
+C:\Users\asus\myappAug10>notepad program.cs
+
+C:\Users\asus\myappAug10>dotnet run
+Hello World!
+
+C:\Users\asus\myappAug10>notepad program.cs
+
+C:\Users\asus\myappAug10>notepad program.cs
+
+C:\Users\asus\myappAug10>dotnet build
+Microsoft (R) Build Engine version 16.7.2+b60ddb6f4 for .NET
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  myappAug10 -> C:\Users\asus\myappAug10\bin\Debug\netcoreapp3.1\myappAug10.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.69
+
+C:\Users\asus\myappAug10>dotnet run
+Hello World!
+The current time is 8/10/2021 9:52:29 AM
+
+C:\Users\asus\myappAug10>
