@@ -1,0 +1,461 @@
+select * from emp
+
+create procedure FindSal(@empno int)
+as
+begin
+Select sal from emp
+where empno=@empno
+end
+
+
+---------------------------------------------------
+
+select * from emp
+
+create procedure FindCount(@deptno int)
+as
+begin
+Select COUNT(deptno) from emp
+where deptno=@deptno
+end
+--------------------------------------------------
+
+select * from emp
+
+create procedure MinMaxSalary(@deptno int)
+as
+begin
+Select Min(sal), Max(sal) from emp
+where deptno=@deptno
+end
+
+
+---------------------------
+
+use training
+
+select * from emp
+
+create function GetSalById(@empno int)
+returns int
+begin
+Declare @sal int
+Select @sal=sal from emp 
+Where empno=@empno
+return @sal
+end
+
+Select dbo.GetSalById(7369)
+
+
+-----------------------------------------
+
+
+
+select * from emp
+
+create function GetCountByDeptno(@deptno int)
+returns int
+begin
+Declare @counter int
+Select @counter=Count(deptno) from emp 
+Where deptno=@deptno
+return @counter
+end
+
+Select dbo.GetCountByDeptno(10)
+
+
+-------------------
+
+
+use training
+
+select * from emp
+
+create function GetEmpByMgr(@mgr int)
+returns Table
+As
+Return
+(Select * from emp 
+Where mgr=@mgr);
+
+
+Select * from GetEmpByMgr(7839)
+
+--------------
+
+
+use learning
+
+select * from emp
+
+create function GetEmpBySalary(@sal int)
+returns Table
+As
+Return
+(Select * from emp 
+Where sal>@sal);
+
+
+Select * from GetEmpBySalary(1000)
+
+------------------------------
+ASCII
+
+SELECT ASCII('A') AS A, ASCII('B') AS B,   
+ASCII('a') AS a, ASCII('b') AS b,  
+ASCII(1) AS [1], ASCII(2) AS [2]; 
+
+--------------------------------
+CHAR
+
+
+SELECT CHAR(65) AS [65], CHAR(66) AS [66],
+
+-------------------------------
+Concat
+
+SELECT CONCAT ( 'Happy ', 'Birthday ', 11, '/', '25' ) AS Result; 
+
+-------------------------------
+
+LOWER
+
+SELECT LOWER('CHARACTER') AS Lower;
+
+
+-------------------------------
+
+LTRIM
+
+
+SELECT LTRIM('     spaces at the beginning of this strin will be removed.');
+
+
+----------------------------------
+
+
+Rtrim
+
+
+SELECT LTRIM('spaces at the end of this string will be removed          .');
+
+
+
+
+
+-------------------------------------
+
+
+
+REVERSE
+
+
+SELECT FirstName, REVERSE(FirstName) AS Reverse
+
+---------------------------------------
+
+
+UPPER
+
+SELECT UPPER('CHARACTER') AS Upper;
+
+
+
+-----------------------------------------
+
+
+COUNT
+
+
+SELECT COUNT(DISTINCT Title)  
+
+-----------------------------------------
+
+
+MAX
+
+SELECT MAX(sal) 
+
+
+
+------------------------------------------
+
+MIN
+
+SELECT MIN(SAL)   
+
+--------------------------------------------
+
+
+GETDATE
+
+GETDATE()
+
+
+-----------------------------------------
+
+
+WHAT NOCOUNT DO
+
+
+It does not allow count function to execute to maintain data encapsulation
+
+
+---------------------------------------
+
+WHY STORED PROCEDURE
+
+
+performance is increased due to query plan
+
+
+----------------------------------------
+
+
+Triggers
+
+Similar to stored procedure but are called automatically based on business requirement
+
+
+---------------------------------------
+
+
+
+---------------------------
+
+
+CREATE TABLE Employee_Test
+(
+Emp_ID INT Identity,-- starts with one increments by 1
+Emp_name Varchar(100),
+Emp_Sal Decimal (10,2)
+)
+
+
+INSERT INTO Employee_Test VALUES ('Anees',1000);
+INSERT INTO Employee_Test VALUES ('Rick',1200);
+INSERT INTO Employee_Test VALUES ('John',1100);
+INSERT INTO Employee_Test VALUES ('Stephen',1300);
+INSERT INTO Employee_Test VALUES ('Maria',1400);
+
+select * from Employee_Test
+
+CREATE TABLE Employee_Test_Audit
+(
+Emp_ID int,
+Emp_name varchar(100),
+Emp_Sal decimal (10,2),
+Audit_Action varchar(100),
+Audit_Timestamp datetime
+)
+
+CREATE TRIGGER triggerAfterInsertUpdateDelete ON Employee_Test
+After Insert,Update,Delete
+AS
+	declare @empid int;
+	declare @empname varchar(100);
+	declare @empsal decimal(10,2);
+	declare @audit_action varchar(100);
+
+	
+If exists(Select * from inserted ) and not exists(Select * from deleted)
+begin
+select @empid=i.Emp_ID from inserted i;
+select @empname=i.Emp_Name from inserted i;
+select @empsal=i.Emp_Sal from inserted i;
+set @audit_action='insertion is performed'
+
+insert into Employee_Test_Audit
+values(@empid,@empname,@empsal,@audit_action,getdate());
+end
+
+If exists(Select * from deleted ) and not exists(Select * from inserted)
+begin 
+select @empid=i.Emp_ID from deleted i;
+select @empname=i.Emp_Name from deleted i;
+select @empsal=i.Emp_Sal from deleted i;
+set @audit_action='deletion is performed'
+
+insert into Employee_Test_Audit
+values(@empid,@empname,@empsal,@audit_action,getdate());
+end
+
+If exists(Select * from deleted ) and exists(Select * from inserted)
+begin
+select @empid=i.Emp_ID from inserted i;
+select @empname=i.Emp_Name from inserted i;
+select @empsal=i.Emp_Sal from inserted i;
+set @audit_action='updation is performed'
+	
+insert into Employee_Test_Audit
+values(@empid,@empname,@empsal,@audit_action,getdate());
+end
+Go
+select * from Employee_Test_Audit
+select * from Employee_Test
+--update Employee_Test set emp_sal=10000 where emp_id=6
+
+delete from Employee_Test where Emp_name= 'Levy123';
+insert into Employee_Test values('Levyy',1233);
+Disable trigger triggerAfterInsert ON Employee_test;
+delete from Employee_Test where emp_id=6;
+
+
+
+------------------------
+
+
+create Trigger triggerInsteadOfDelete On emp
+Instead Of Delete
+AS
+	declare @empno int;
+	declare @job varchar(100);
+	select @job=d.job from deleted d ;
+	select @empno=d.empno from deleted d;
+	Begin
+		if(@job='PRESIDENT')
+		begin
+		Print('Cannot Delete');
+		end
+		else
+		begin
+		    delete from emp where empno=@empno;
+			Print 'Record Deleted';
+		end
+	End
+Go
+
+
+------------------------
+
+
+
+
+use learning
+declare empcursor cursor for select empno , ename , sal from emp order by sal desc
+declare @name varchar(20), @sal int , @empno int
+open empcursor
+print @@fetch_status
+fetch absolute 3 from empcursor into @empno,@name,@sal
+while @@fetch_status=0
+begin
+print @name + 'is earning' + cast(@sal as varchar)
+fetch next from empcursor into @empno, @name , @sal
+end
+close empcursor
+deallocate empcursor 
+go
+
+
+-------------------------------
+
+
+
+use training
+
+CREATE TABLE Person (
+id INT,
+Securityno INT,
+Sal numeric(18,9),
+DOB DATETIME,
+Name VARCHAR(80)
+);
+GO
+
+DECLARE @row INT;
+DECLARE @string VARCHAR(80), @length INT, @code INT;
+SET @row = 0;
+WHILE @row < 100000 BEGIN
+SET @row = @row + 1;
+
+
+
+-- Build the random string
+SET @length = ROUND(80*RAND(),0);
+
+SET @string = 'Name';
+WHILE @length > 0 BEGIN
+SET @length = @length - 1;
+SET @code = ROUND(32*RAND(),0) - 6;
+SET @string = @string + CHAR(ASCII('a')+@code-1);
+END
+
+
+
+-- Ready for the record
+SET NOCOUNT ON;
+INSERT INTO person VALUES (
+@row,
+ROUND(2000000*RAND()-1000000,0),
+ROUND(2000000*RAND()-1000000,9),
+CONVERT(DATETIME, ROUND(60000*RAND()-30000,9)),
+@string
+)
+END
+
+
+select * from Person;
+
+update person set name='John' where id between 1 and 5000
+update person set name='Peter' where id between 5001 and 10000
+update person set name='Mark' where id between 10001 and 15000
+update person set name='Gray' where id between 15001 and 20000
+update person set name='Levy' where id between 20001 and 25000
+update person set name='Chris' where id between 25001 and 30000
+
+
+create clustered index person_index
+on person(name)
+
+
+select * from person where name='Chris';
+set statistics io , time on;
+
+
+
+--------------------------------------
+create Trigger triggerInsteadOfUpdatee On emp
+Instead Of Update
+AS
+	
+	declare @empno int;
+	declare @sal int;
+	
+	select @sal=u.sal from inserted u ;                          
+	select @empno=u.empno from inserted u;
+	
+	select @Sal=d.sal from deleted d ;                          
+	select @Empno=d.empno from deleted d;
+	Begin
+		if(@sal<@Sal)
+		begin
+		Print('Cannot Update');
+		end
+		else
+		begin
+		    update emp set sal=@sal from emp where empno=@empno;
+		end
+	End
+Go
+
+
+-----------------------------------------
+
+
+
+Begin Try
+insert into emp(empno,deptno)
+values(2979/0,10);
+End Try
+Begin Catch
+print @@error
+print Error_number()
+print Error_message();
+end catch
+
+
+------------------------------------------
+
+
