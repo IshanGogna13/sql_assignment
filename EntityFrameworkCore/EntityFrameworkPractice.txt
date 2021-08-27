@@ -1,0 +1,594 @@
+Scaffold-DbContext "Server=DESKTOP-JU9V4RR\SQLEXPRESS;Database=learning;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -Tables emp -OutputDir Models
+
+List all emps who are in 10th dept////////////////
+
+using System;
+using EntityFrameworkSamples.Models;
+using System.Linq;
+
+namespace EntityFrameworkSamples
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //GetAllEmpDetails();
+            GetEmpDetailsByID();
+        }
+
+        private static void GetEmpDetailsByID()
+        {
+            var ctx = new learningContext();
+            var emps = ctx.Emps.Where(e=>e.Deptno==10);
+            foreach (var v in emps)
+            {
+                Console.WriteLine(v.Ename);
+            }
+        }
+    }
+}
+
+-------------------------------------------
+
+
+
+--------------------------------------
+
+
+    Select max salary from emp
+
+using System;
+using EntityFrameworkSamples.Models;
+using System.Linq;
+
+namespace EntityFrameworkSamples
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //GetAllEmpDetails();
+            GetMaxSalaryy();
+        }
+
+        private static void GetMaxSalaryy()
+        {
+            var ctx = new learningContext();
+            var emps = ctx.Emps.Max(x => x.Sal);
+
+            Console.WriteLine(emps);
+
+        }
+    }
+}
+
+
+-------------------------------------------
+
+To add data to table
+
+
+using System;
+using EntityFrameworkSamples.Models;
+using System.Linq;
+
+namespace EntityFrameworkSamples
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //GetAllEmpDetails();
+            //GetMaxSalaryy();
+
+            AddNewEmployee();
+            Console.ReadLine();
+        }
+        private static void AddNewEmployee()
+        {
+            var ctx = new learningContext();
+            Emp employee = new Emp();
+            employee.Empno = 5050;
+            employee.Ename = "Ishan";
+            employee.Sal = 1000;
+            employee.Deptno = 10;
+            try
+            {
+                ctx.Emps.Add(employee);
+                ctx.SaveChanges();
+                Console.WriteLine("new employee added");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.InnerException.ToString());
+            }
+        }
+
+        private static void GetMaxSalaryy()
+        {
+            var ctx = new learningContext();
+            var emps = ctx.Emps.Max(x => x.Sal);
+
+            Console.WriteLine(emps);
+
+        }
+    }
+}
+
+
+------------------------------------------------
+
+to Delete data in table
+
+using System;
+using EntityFrameworkSamples.Models;
+using System.Linq;
+
+namespace EntityFrameworkSamples
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //GetAllEmpDetails();
+            //GetMaxSalaryy();
+
+            DeleteEmployee();
+            Console.ReadLine();
+        }
+        private static void DeleteEmployee()
+        {
+            var ctx = new learningContext();
+            Emp employee = new Emp();
+            employee.Empno = 5050;
+            employee.Ename = "Ishan";
+            employee.Sal = 1000;
+            employee.Deptno = 10;
+            try
+            {
+                ctx.Emps.Remove(employee);
+                ctx.SaveChanges();
+                Console.WriteLine("new employee deleted");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.InnerException.ToString());
+            }
+        }
+}
+
+
+------------------------------
+
+
+private static void UpdateEmpName_SP()
+        {
+            var ctx = new learningContext();
+            try
+            {
+                ctx.Database.ExecuteSqlRaw("UpdateEmpNamebyEmpno @p0 @p1", 5050, "Mary");
+                Console.WriteLine("Done");
+
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.InnerException.Message);
+            }
+        }
+
+--------------------------------------
+
+
+ private static void UpdateEmpName_SP_WithParam()
+        {
+            var ctx = new learningContext();
+            var param= new SqlParameter[]
+            {
+                new SqlParameter()
+                {
+                    ParameterName = "@empno",
+                    SqlDbType = System.Data.SqlDbType.Int,
+                    Size= 100,
+                    Direction = System.Data.ParameterDirection.Input,
+                    Value= 5050
+                },
+                new SqlParameter()
+                {
+                    ParameterName = "@newname",
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                    Size = 10,
+                    Direction = System.Data.ParameterDirection.Input,
+                    Value = "Sheela" }
+            };
+
+
+
+---------------------------------
+
+
+using System;
+using EntityFrameworkSamples.Models;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
+
+namespace EntityFrameworkSamples
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //GetAllEmpDetails();
+            //GetMaxSalaryy();
+            // GetEmpDetailsByID();
+            // AddNewEmployee();
+            // DeleteEmployee();
+            //UpdateEmpName_SP();
+            //UpdateEmpName_SP_WithParam();
+            DisconnectedArchitecture();
+            Console.ReadLine();
+        }
+
+        private static void DisconnectedArchitecture()
+        {
+            var ctx = new learningContext();
+            try
+            {
+                var emp = ctx.Emps.Where(x => x.Empno == 2979).SingleOrDefault();
+                ctx.Dispose();
+                UpdateEmpName(emp);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private static void UpdateEmpName(Emp emp)
+        {
+            emp.Ename = "Ishan";
+            var ctx = new learningContext();
+            Console.WriteLine(ctx.Entry(emp).State.ToString());
+            ctx.Update<Emp>(emp);
+            ctx.SaveChanges();
+            Console.WriteLine("emp name is updated in disconnected mode");
+        }
+
+        //private static void UpdateEmpName_SP_WithParam()
+        //{
+        //    var ctx = new learningContext();
+        //    var param= new SqlParameter[]
+        //    {
+        //        new SqlParameter()
+        //        {
+        //            ParameterName = "@empno",
+        //            SqlDbType = System.Data.SqlDbType.Int,
+        //            Size= 100,
+        //            Direction = System.Data.ParameterDirection.Input,
+        //            Value= 5050
+        //        },
+        //        new SqlParameter()
+        //        {
+        //            ParameterName = "@newname",
+        //            SqlDbType = System.Data.SqlDbType.VarChar,
+        //            Size = 10,
+        //            Direction = System.Data.ParameterDirection.Input,
+        //            Value = "Sheela" }
+        //    };
+
+
+        //private static void UpdateEmpName_SP()
+        //{
+        //    var ctx = new learningContext();
+        //    try
+        //    {
+        //        ctx.Database.ExecuteSqlRaw("UpdateEmpNamebyEmpno @p0 @p1", 5050, "Mary");
+        //        Console.WriteLine("Done");
+
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        Console.WriteLine(ex.InnerException.Message);
+        //    }
+        //}
+
+        //private static void GetAllEmpDetails_SP()
+        //{
+        //    var ctx = new learningContext();
+        //    try
+        //    {
+        //        var emps = ctx.Set<Emp>().FromSqlRaw("GetEmployeeDetails").ToList();
+
+        //        foreach(var emp in emps)
+        //        {
+        //            Console.WriteLine(emp.Ename + " " + emp.Sal);
+        //        }
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        Console.WriteLine(ex.InnerException.ToString());
+        //    }
+        //}
+        //private static void DeleteEmployee()
+        //{
+        //    var ctx = new learningContext();
+        //    Emp employee = new Emp();
+        //    employee.Empno = 5050;
+        //    employee.Ename = "Ishan";
+        //    employee.Sal = 1000;
+        //    employee.Deptno = 10;
+        //    try
+        //    {
+        //        ctx.Emps.Remove(employee);
+        //        ctx.SaveChanges();
+        //        Console.WriteLine("new employee deleted");
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        Console.WriteLine(ex.InnerException.ToString());
+        //    }
+        //}
+        //private static void GetEmpDetailsByID()
+        //{
+        //    var ctx = new learningContext();
+        //    var emps = ctx.Emps.Where(e => e.Deptno == 10);
+        //    foreach (var v in emps)
+        //    {
+        //        Console.WriteLine(v.Ename);
+        //    }
+        //}
+        //private static void GetMaxSalaryy()
+        //{
+        //    var ctx = new learningContext();
+        //    var emps = ctx.Emps.Max(x => x.Sal);
+
+        //    Console.WriteLine(emps);
+
+        //}
+        //private static void AddNewEmployee()
+        //{
+        //    var ctx = new learningContext();
+        //    Emp employee = new Emp();
+        //    employee.Empno = 5050;
+        //    employee.Ename = "Ishan";
+        //    employee.Sal = 1000;
+        //    employee.Deptno = 10;
+        //    try
+        //    {
+        //        ctx.Emps.Add(employee);
+        //        ctx.SaveChanges();
+        //        Console.WriteLine("new employee added");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.InnerException.ToString());
+        //    }
+        //}
+    }
+}
+
+
+
+
+-------------------------
+
+
+        private static void AddnewcustomerAndOrder()
+        {
+            var ctx = new Context();
+            Customer newcust = new Customer();
+            newcust.ID = 1;
+            newcust.Name = "Ishan";
+
+            Order ord = new Order();
+            ord.Order_ID = 15;
+            ord.Amount = 10000;
+            ord.OrderDate = DateTime.Now;
+
+            ord.cust = newcust;
+
+            try
+            {
+                ctx.Orders.Add(ord);
+                ctx.SaveChanges();
+                Console.WriteLine("Customer and order is created");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+
+
+
+-----------------------------
+
+
+private static void CustomerWiseOrderCount()
+{
+var ctx = new Context();
+
+
+
+// select ID, count(*) from orders group by ID
+
+
+
+var result = from ord in ctx.Orders
+group ord by ord.cust.ID into g
+select new { customer = g.Key, count = g.Count() };
+
+
+
+foreach (var item in result)
+{
+Console.WriteLine(item.customer + " " + item.count.ToString());
+}
+}
+
+
+
+--------------------------------
+
+
+private static void AddNewEmployee()
+        {
+            var ctx = new learningContext();
+            Emp employee = new Emp();
+            employee.Empno = 5050;
+            employee.Ename = "Ishan";
+            employee.Sal = 1000;
+            employee.Deptno = 10;
+            try
+            {
+                ctx.Emps.Add(employee);
+                ctx.SaveChanges();
+                Console.WriteLine("new employee added");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.InnerException.ToString());
+            }
+        }
+
+----------------------------------
+
+
+        private static void GetEmpDetailsByID()
+        {
+            var ctx = new learningContext();
+            var emps = ctx.Emps.Where(e => e.Deptno == 10);
+            foreach (var v in emps)
+            {
+                Console.WriteLine(v.Ename);
+            }
+        }
+        private static void GetMaxSalaryy()
+        {
+            var ctx = new learningContext();
+            var emps = ctx.Emps.Max(x => x.Sal);
+
+            Console.WriteLine(emps);
+
+        }
+
+
+----------------------------------------------
+
+
+
+        private static void DeleteEmployee()
+        {
+            var ctx = new learningContext();
+            Emp employee = new Emp();
+            employee.Empno = 5050;
+            employee.Ename = "Ishan";
+            employee.Sal = 1000;
+            employee.Deptno = 10;
+            try
+            {
+                ctx.Emps.Remove(employee);
+                ctx.SaveChanges();
+                Console.WriteLine("new employee deleted");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.InnerException.ToString());
+            }
+        }
+
+
+----------------------------------------
+
+
+
+        private static void GetAllEmpDetails_SP()
+        {
+            var ctx = new learningContext();
+            try
+            {
+                var emps = ctx.Set<Emp>().FromSqlRaw("GetEmployeeDetails").ToList();
+
+                foreach (var emp in emps)
+                {
+                    Console.WriteLine(emp.Ename + " " + emp.Sal);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.InnerException.ToString());
+            }
+        }
+
+
+------------------------------------
+
+
+        private static void UpdateEmpName_SP()
+        {
+            var ctx = new learningContext();
+            try
+            {
+                ctx.Database.ExecuteSqlRaw("UpdateEmpNamebyEmpno @p0 @p1", 5050, "Mary");
+                Console.WriteLine("Done");
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.InnerException.Message);
+            }
+        }
+
+
+
+----------------------------------
+
+
+
+
+        private static void UpdateEmpName_SP_WithParam()
+        {
+            var ctx = new learningContext();
+            var param = new SqlParameter[]
+            {
+                new SqlParameter()
+                {
+                    ParameterName = "@empno",
+                    SqlDbType = System.Data.SqlDbType.Int,
+                    Size= 100,
+                    Direction = System.Data.ParameterDirection.Input,
+                    Value= 5050
+                },
+                new SqlParameter()
+                {
+                    ParameterName = "@newname",
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                    Size = 10,
+                    Direction = System.Data.ParameterDirection.Input,
+                    Value = "Sheela" }
+            };
+
+
+
+-----------------------------------------
+
+
+
+ private static void DisconnectedArchitecture()
+        {
+            var ctx = new learningContext();
+            try
+            {
+                var emp = ctx.Emps.Where(x => x.Empno == 2979).SingleOrDefault();
+                ctx.Dispose();
+                UpdateEmpName(emp);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+
+
+
